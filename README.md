@@ -1,4 +1,10 @@
-# Unity ZipExtractor
+# [![Downlad][download-badge]][download-link] | [![Paypal][paypal-badge]][paypal-link]
+
+[download-badge]: https://img.shields.io/badge/Download-Latest-green
+[download-link]: https://github.com/imememani/Unity-ZipExtractor/releases
+
+[paypal-badge]: https://img.shields.io/badge/Paypal-Donate!-%23003087.svg?logo=paypal&style=flat
+[paypal-link]: https://paypal.me/1MemeMan1
 
 [preview]: https://i.imgur.com/nZs9Fr3.png
 

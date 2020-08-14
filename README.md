@@ -11,4 +11,4 @@ These will be pressable on zip files, they will gray out on any other kinds.
 
 The contents will be extracted to whatever directory the zip file is currently in, a new folder will be created to host the files named after the zip file!
 
-![alt text](https://ibb.co/NZCrRdD)
+![preview](https://imgur.com/a/aQe1LiO)

@@ -78,8 +78,6 @@ namespace LateNightStudios.Extensions.ZipExtractor
                     // Is this entry a file or directory?
                     isFile = !entry.FullName.EndsWith("/");
 
-                    Debug.Log(Path.GetDirectoryName(entry.FullName));
-
                     // Obtain the full extraction path.
                     extractionPath = Path.GetFullPath(Path.Combine(newDirectory, entry.FullName));
 

@@ -126,6 +126,17 @@ namespace LateNightStudios.Extensions.ZipExtractor
         /// <summary>
         /// Is the given input a valid zip file?
         /// </summary>
-        private static bool IsZipFile(string input) => input.EndsWith("zip");
+        private static bool IsZipFile(string input) 
+        {
+          switch (input.ToLowerInvariant())
+          {
+              case "zip":
+                  return true;
+              case "zipx":
+                  return true;
+              case "7z":
+                  return true;
+          }
+        }
     }
 }

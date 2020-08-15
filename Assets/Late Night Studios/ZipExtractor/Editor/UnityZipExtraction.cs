@@ -136,6 +136,9 @@ namespace LateNightStudios.Extensions.ZipExtractor
                   return true;
               case "7z":
                   return true;
+                  
+              default:
+                  return false;
           }
         }
     }

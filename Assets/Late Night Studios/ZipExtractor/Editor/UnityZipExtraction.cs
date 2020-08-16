@@ -1,7 +1,6 @@
-﻿using System.IO;
+using System.IO;
 using System.IO.Compression;
 using UnityEditor;
-using UnityEngine;
 
 namespace LateNightStudios.Extensions.ZipExtractor
 {
@@ -66,80 +65,88 @@ namespace LateNightStudios.Extensions.ZipExtractor
             // Notify the user the extraction has begun.
             EditorUtility.DisplayDialog($"Extracting {fileName}", "Your zip file is extracting.", "Ok");
 
-            // Extract the contents to this new directory. (Wrap in using to dipose when finished)
-            using (ZipArchive archive = ZipFile.OpenRead(zipLocation))
+            // Open a stream and copy all the file data into it. (avoid file lock)
+            using (Stream fileStream = new MemoryStream(File.ReadAllBytes(zipLocation)))
             {
-                // Precache locals.
-                bool isFile;
-                string extractionPath;
-
-                foreach (ZipArchiveEntry entry in archive.Entries)
+                // Extract the contents to this new directory. (Wrap in using to dipose when finished)
+                using (ZipArchive archive = new ZipArchive(fileStream, ZipArchiveMode.Read, false))
                 {
-                    // Is this entry a file or directory?
-                    isFile = !entry.FullName.EndsWith("/");
+                    // Precache locals.
+                    bool isFile;
+                    string extractionPath;
 
-                    // Obtain the full extraction path.
-                    extractionPath = Path.GetFullPath(Path.Combine(newDirectory, entry.FullName));
-
-                    // Get the entry directory name.
-                    string dirName = Path.GetDirectoryName(extractionPath);
-
-                    // Does the directory exist?
-                    if (!Directory.Exists(dirName))
+                    foreach (ZipArchiveEntry entry in archive.Entries)
                     {
-                        // No, create it so the entry can properly extract itself.
-                        Directory.CreateDirectory(dirName);
-                    }
+                        // Is this entry a file or directory?
+                        isFile = !entry.FullName.EndsWith("/");
 
-                    // Is this entry not a file?
-                    if (!isFile)
-                    {
-                        // It's a directory, create it.
-                        Directory.CreateDirectory(extractionPath);
+                        // Obtain the full extraction path.
+                        extractionPath = Path.GetFullPath(Path.Combine(newDirectory, entry.FullName));
 
-                        continue;
-                    }
-                    else
-                    {
-                        // This entry is a file, extract the file and its contents.
-                        entry.ExtractToFile(extractionPath, true);
+                        // Get the entry directory name.
+                        string dirName = Path.GetDirectoryName(extractionPath);
+
+                        // Does the directory exist?
+                        if (!Directory.Exists(dirName))
+                        {
+                            // No, create it so the entry can properly extract itself.
+                            Directory.CreateDirectory(dirName);
+                        }
+
+                        // Is this entry not a file?
+                        if (!isFile)
+                        {
+                            // It's a directory, create it.
+                            Directory.CreateDirectory(extractionPath);
+
+                            continue;
+                        }
+                        else
+                        {
+                            // This entry is a file, extract the file and its contents.
+                            entry.ExtractToFile(extractionPath, true);
+                        }
                     }
                 }
-
-                // The extraction process has finished, the file lock is lifted.
-                // Do we want to remove the zip?
-                if (deleteZipOnFinish)
-                {
-                    // Yes, delete the file.
-                    File.Delete(zipLocation);
-                }
-
-                // Refresh the project.
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
-
-                // Notify the user the extraction is complete.
-                EditorUtility.DisplayDialog($"Complete!", "Zip extracted.", "Ok");
             }
+
+            // The extraction process has finished, the file lock is lifted.
+            // Do we want to remove the zip?
+            if (deleteZipOnFinish)
+            {
+                // Yes, delete the file.
+                File.Delete(zipLocation);
+            }
+
+            // Refresh the project.
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            // Notify the user the extraction is complete.
+            EditorUtility.DisplayDialog($"Complete!", "Zip extracted.", "Ok");
+
         }
 
         /// <summary>
         /// Is the given input a valid zip file?
         /// </summary>
-        private static bool IsZipFile(string input) 
+        private static bool IsZipFile(string input)
         {
-          switch (input.ToLowerInvariant())
-          {
-              case "zip":
-                  return true;
-              case "zipx":
-                  return true;
-              case "7z":
-                  return true;
-                  
-              default:
-                  return false;
-          }
+            // Cut the rest of the string off to only obtain the extension.
+            input = input.Remove(0, input.LastIndexOf('.') + 1);
+
+            switch (input.ToLowerInvariant())
+            {
+                case "zip":
+                    return true;
+                case "zipx":
+                    return true;
+                case "7z":
+                    return true;
+
+                default:
+                    return false;
+            }
         }
     }
 }

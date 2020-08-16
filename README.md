@@ -6,8 +6,9 @@
 [paypal-badge]: https://img.shields.io/badge/Paypal-Donate!-%23003087.svg?logo=paypal&style=flat
 [paypal-link]: https://paypal.me/1MemeMan1
 
-[preview]: https://i.imgur.com/nZs9Fr3.png
-
+[0]: https://i.imgur.com/zZB4wOn.png
+[1]: https://i.imgur.com/nZs9Fr3.png
+[2]: https://i.imgur.com/BZBg1lW.png
 ---
 
 # Information
@@ -25,11 +26,10 @@ The contents will be extracted to whatever directory the zip file is currently i
 # How-To
 
 ## 1. Drag the .zip into your project, anywhere.
+![img][0]
 ## 2. Select and right-click your zip file.
+![img][1]
 ## 3. Extract!
+![img][2]
 
 It's that easy.
-
----
-
-![img][preview]

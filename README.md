@@ -10,6 +10,8 @@
 
 ---
 
+# Information
+
 This extension adds a 2 new items to your asset context menu;
 
 **Extract**
@@ -19,5 +21,15 @@ This extension adds a 2 new items to your asset context menu;
 These will be pressable on zip files, they will gray out on any other kinds.
 
 The contents will be extracted to whatever directory the zip file is currently in, a new folder will be created to host the files named after the zip file!
+
+# How-To
+
+## 1. Drag the .zip into your project, anywhere.
+## 2. Select and right-click your zip file.
+## 3. Extract!
+
+It's that easy.
+
+---
 
 ![img][preview]

@@ -74,7 +74,8 @@ namespace LateNightStudios.Extensions.ZipExtractor
                     // Precache locals.
                     bool isFile;
                     string extractionPath;
-
+                    string dirName;
+                    
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
                         // Is this entry a file or directory?
@@ -84,7 +85,7 @@ namespace LateNightStudios.Extensions.ZipExtractor
                         extractionPath = Path.GetFullPath(Path.Combine(newDirectory, entry.FullName));
 
                         // Get the entry directory name.
-                        string dirName = Path.GetDirectoryName(extractionPath);
+                        dirName = Path.GetDirectoryName(extractionPath);
 
                         // Does the directory exist?
                         if (!Directory.Exists(dirName))

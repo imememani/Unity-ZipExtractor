@@ -11,28 +11,28 @@ namespace LateNightStudios.Extensions.ZipExtractor
     public static class UnityZipExtraction
     {
         [MenuItem("Assets/Extract", true)]
-        public static bool ExtractionVerification()
+        private static bool ExtractionVerification()
         {
             // Obtain the actual asset and check if it's a zipped file.
             return IsZipFile(AssetDatabase.GetAssetPath(Selection.activeInstanceID));
         }
 
         [MenuItem("Assets/Extract And Delete", true)]
-        public static bool ExtractionAndDeleteVerification()
+        private static bool ExtractionAndDeleteVerification()
         {
             // Obtain the actual asset and check if it's a zipped file.
             return IsZipFile(AssetDatabase.GetAssetPath(Selection.activeInstanceID));
         }
 
         [MenuItem("Assets/Extract", false, 0)]
-        public static void Extract()
+        private static void Extract()
         {
             // Start extracting the contents.
             Extract(false);
         }
 
         [MenuItem("Assets/Extract And Delete", false, 0)]
-        public static void ExtractAndDelete()
+        private static void ExtractAndDelete()
         {
             // Display confirmation dialog.
             if (EditorUtility.DisplayDialog("Delete Zip?", "Are you sure you want to delete this file after extraction?", "Yes", "No"))

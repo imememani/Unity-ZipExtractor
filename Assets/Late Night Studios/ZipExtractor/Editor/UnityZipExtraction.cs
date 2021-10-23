@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using UnityEditor;
 
@@ -11,35 +11,18 @@ namespace LateNightStudios.Extensions.ZipExtractor
     public static class UnityZipExtraction
     {
         [MenuItem("Assets/Extract", true)]
-        private static bool ExtractionVerification()
-        {
-            // Obtain the actual asset and check if it's a zipped file.
-            return IsZipFile(AssetDatabase.GetAssetPath(Selection.activeInstanceID));
-        }
-
-        [MenuItem("Assets/Extract And Delete", true)]
-        private static bool ExtractionAndDeleteVerification()
+        public static bool ExtractionVerification()
         {
             // Obtain the actual asset and check if it's a zipped file.
             return IsZipFile(AssetDatabase.GetAssetPath(Selection.activeInstanceID));
         }
 
         [MenuItem("Assets/Extract", false, 0)]
-        private static void Extract()
+        public static void Extract()
         {
+            // Prompt the user to delete the zip after extraction.
             // Start extracting the contents.
-            Extract(false);
-        }
-
-        [MenuItem("Assets/Extract And Delete", false, 0)]
-        private static void ExtractAndDelete()
-        {
-            // Display confirmation dialog.
-            if (EditorUtility.DisplayDialog("Delete Zip?", "Are you sure you want to delete this file after extraction?", "Yes", "No"))
-            {
-                // Start extracting the contents.
-                Extract(true);
-            }
+            Extract(EditorUtility.DisplayDialog("Extraction", "Would you like to delete this file after extraction?", "Yes", "No"));
         }
 
         /// <summary>
@@ -62,9 +45,9 @@ namespace LateNightStudios.Extensions.ZipExtractor
             // Create a new folder within the parent folder with the file name.
             Directory.CreateDirectory(newDirectory);
 
-            // Notify the user the extraction has begun.
-            EditorUtility.DisplayDialog($"Extracting {fileName}", "Your zip file is extracting.", "Ok");
-
+            // Entries cache.
+            int entries = 0;
+        
             // Open a stream and copy all the file data into it. (avoid file lock)
             using (Stream fileStream = new MemoryStream(File.ReadAllBytes(zipLocation)))
             {
@@ -74,8 +57,18 @@ namespace LateNightStudios.Extensions.ZipExtractor
                     // Precache locals.
                     bool isFile;
                     string extractionPath;
-                    string dirName;
-                    
+                    entries = archive.Entries.Count;
+
+                    bool replaceAll = false;
+                    bool overWriteSingleEntry = false;
+
+                    if (entries == 0)
+                    {
+                        // Notify the user the extraction can't continue.
+                        EditorUtility.DisplayDialog($"Extraction Error!", "Can't extract an empty archive.", "Ok");
+                        return;
+                    }
+
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
                         // Is this entry a file or directory?
@@ -85,9 +78,19 @@ namespace LateNightStudios.Extensions.ZipExtractor
                         extractionPath = Path.GetFullPath(Path.Combine(newDirectory, entry.FullName));
 
                         // Get the entry directory name.
-                        dirName = Path.GetDirectoryName(extractionPath);
+                        string dirName = Path.GetDirectoryName(extractionPath);
+
+                        // Overwrite check.
+                        if ((File.Exists(extractionPath) || Directory.Exists(extractionPath)) && !replaceAll)
+                        {
+                            // Get the results.
+                            int result = PromptToOverwrite(dirName);
+                            replaceAll = result == 2;
+                            overWriteSingleEntry = result == 0;
+                        }
 
                         // Does the directory exist?
+                        // No need to prompt to overwrite these.
                         if (!Directory.Exists(dirName))
                         {
                             // No, create it so the entry can properly extract itself.
@@ -99,14 +102,15 @@ namespace LateNightStudios.Extensions.ZipExtractor
                         {
                             // It's a directory, create it.
                             Directory.CreateDirectory(extractionPath);
-
-                            continue;
                         }
                         else
                         {
                             // This entry is a file, extract the file and its contents.
-                            entry.ExtractToFile(extractionPath, true);
+                            entry.ExtractToFile(extractionPath, overWriteSingleEntry || replaceAll);
                         }
+
+                        // Reset flag.
+                        overWriteSingleEntry = false;
                     }
                 }
             }
@@ -124,8 +128,7 @@ namespace LateNightStudios.Extensions.ZipExtractor
             AssetDatabase.Refresh();
 
             // Notify the user the extraction is complete.
-            EditorUtility.DisplayDialog($"Complete!", "Zip extracted.", "Ok");
-
+            EditorUtility.DisplayDialog($"Complete!", $"Extracted {entries} entries to: {newDirectory}!", "Ok");
         }
 
         /// <summary>
@@ -133,21 +136,30 @@ namespace LateNightStudios.Extensions.ZipExtractor
         /// </summary>
         private static bool IsZipFile(string input)
         {
-            // Cut the rest of the string off to only obtain the extension.
-            input = input.Remove(0, input.LastIndexOf('.') + 1);
+            // Get the file extension.
+            input = Path.HasExtension(input) ? Path.GetExtension(input).Remove(0, 1) : string.Empty;
 
+            // Is it supported?
             switch (input.ToLowerInvariant())
             {
+                // Supported formats.
+                case "zipx":
+                case "7z":
                 case "zip":
                     return true;
-                case "zipx":
-                    return true;
-                case "7z":
-                    return true;
+
 
                 default:
                     return false;
             }
+        }
+
+        /// <summary>
+        /// Ask for permission to overwire an existing file.
+        /// </summary>
+        private static int PromptToOverwrite(string existingName)
+        {
+            return EditorUtility.DisplayDialogComplex("Overwrite", $"{existingName} already exists, would you like to overwrite it?", "Yes", "No", "Replace All");
         }
     }
 }

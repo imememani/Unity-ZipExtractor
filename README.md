@@ -7,27 +7,32 @@
 [paypal-link]: https://paypal.me/1MemeMan1
 
 [0]: https://i.imgur.com/zZB4wOn.png
-[1]: https://i.imgur.com/nZs9Fr3.png
+[1]: https://i.imgur.com/Ta7eXKi.png
 [2]: https://i.imgur.com/BZBg1lW.png
+[3]: https://i.imgur.com/7FBPtk6.png
 ---
 
 # Information
 
-This extension adds a 2 new items to your asset context menu;
+This extension adds a new item to your asset context menu;
 
-**Extract**
-
-**Extract And Delete**
-
-These will be pressable on zip files, they will gray out on any other kinds.
+![img][3]
 
 The contents will be extracted to whatever directory the zip file is currently in, a new folder will be created to host the files named after the zip file!
 
+
+`Supported Formats`
+```
+.zip
+.7z
+.zipx
+```
+
 # How-To
 
-## 1. Drag the .zip into your project, anywhere.
+## 1. Drag the archive into your project, anywhere.
 ![img][0]
-## 2. Select and right-click your zip file.
+## 2. Select and right-click your archive file.
 ![img][1]
 ## 3. Extract!
 ![img][2]
